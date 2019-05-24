@@ -306,14 +306,12 @@ namespace MixedPoisson
 		DataOut<dim>		data_out;
 		data_out.attach_dof_handler(dof_handler);
 		data_out.add_data_vector(solution, postprocessor);
-		
 		data_out.build_patches();
 		std::string file = "Poisson-"
 				+ 
 				Utilities::int_to_string(time_step_number,3) 
 				+ 
 				".vtu";
-
 		std::ofstream output(file.c_str());
 		data_out.write_vtu(output);
 		output.close();

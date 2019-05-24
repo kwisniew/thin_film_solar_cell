@@ -17,7 +17,7 @@ SET(CLEAN_UP_FILES *.tex *.vtk *.vtu *.msh *.dofs test_file.prm)
 
 # Set the name of the project and target:
 SET(TARGET "main")
-#SET(TARGET "test")
+#SET(TARGET "test_all")
 
 
 FILE(GLOB TARGET_SRC "./source/*.cpp")

@@ -45,8 +45,8 @@ namespace Grid_Maker
 	void 
 	Grid<dim>::
 	make_grids(Triangulation<dim> & semiconductor_triang,
-               Triangulation<dim>     & electrolyte_triang,
-               Triangulation<dim>     & Poisson_triang,
+               Triangulation<dim> & electrolyte_triang,
+               Triangulation<dim> & Poisson_triang,
                const bool	      & full_system)
 	{
 		// make grids
