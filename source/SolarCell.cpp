@@ -37,8 +37,10 @@ namespace SOLARCELL
 	built_in_bias(),
 	applied_bias(),
 	bulk_bias(),
-	schottky_bias(),
-	generation()
+	schottky_bias()/*,
+	generation(),
+	delta_t(0.05),
+	full_system(0)*/
 	{
 		// set the parameters
 		sim_params.parse_and_scale_parameters(prm);
@@ -1835,7 +1837,6 @@ namespace SOLARCELL
 						sim_params,
 						time_step_number);
 			
-
 		task_group += Threads::new_task(&LDG_System::
 						LDG<dim>::output_rescaled_results,
 						LDG_Assembler,
@@ -3176,7 +3177,8 @@ namespace SOLARCELL
 
 		double t_end = 1.0;
 		double time  = 0.0;
-	
+
+
 		while(time < t_end)
 		{
 			// set carrier_system_rhs = M * u^{n-1}
@@ -3228,7 +3230,7 @@ namespace SOLARCELL
 									QGauss<dim-1>(degree+2)),
 					Assembly::DriftDiffusion::CopyData<dim>(carrier_fe)
 					);
-		
+
 			Threads::TaskGroup<void> task_group;
 
 			task_group += Threads::new_task(&ChargeCarrierSpace::
@@ -3262,7 +3264,8 @@ namespace SOLARCELL
 
 		LDG_table.add_value("u1", primary_error);
 		LDG_table.add_value("J1", flux_error);
-	
+
+
 		LDG_Assembler.compute_interface_errors(electrolyte_triangulation,
 							electrolyte_dof_handler,
 							redox_pair.carrier_1.solution,
@@ -3274,7 +3277,7 @@ namespace SOLARCELL
 		LDG_table.add_value("J2", flux_error);
 
 		print_results(n_refine);
-	
+
 	} // end test_interface_coupling
 
 

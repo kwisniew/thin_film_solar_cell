@@ -30,13 +30,9 @@ class PostProcessor : public DataPostprocessor<dim>
 		/** \note: This is called internally from DatOut::build_patches*/
 		virtual
 		void 
-		compute_derived_quantities_vector(
-				const std::vector<Vector<double>>		&uh,
-				const std::vector<std::vector<Tensor<1,dim>>>	&duh,
-				const std::vector<std::vector<Tensor<2,dim>>>	&dduh,
-				const std::vector<Point<dim>>			&normals,
-				const std::vector<Point<dim>>			&evaluated_points,
-				std::vector<Vector<double>>			&computed_quantities) const;
+		evaluate_vector_field
+		(const DataPostprocessorInputs::Vector<dim> &inputs,
+			   std::vector<Vector<double> >         &computed_quantities) const;
 
 
 		/** \brief Returns a vector containing the names of the data componetnt.*/
