@@ -80,17 +80,13 @@ get_needed_update_flags() const
 template<int dim>
 void 
 PostProcessor<dim>::
-compute_derived_quantities_vector(
-	const std::vector<Vector<double>>			&uh,
-	const std::vector<std::vector<Tensor<1,dim>>>		&/*duh*/,
-	const std::vector<std::vector<Tensor<2,dim>>>		&/* dduh*/,
-	const std::vector<Point<dim>>				&/*normals*/,
-	const std::vector<Point<dim>>				&/*evaluated_points*/,
-	std::vector<Vector<double>>				&computed_quantities) const
+evaluate_vector_field
+(const DataPostprocessorInputs::Vector<dim> &inputs,
+       std::vector<Vector<double> >         &computed_quantities) const
 {
 
 	
-	const unsigned int n_quadrature_points = uh.size();
+	const unsigned int n_quadrature_points = inputs.solution_values.size();
 	Assert(computed_quantities.size() == n_quadrature_points, ExcInternalError());
 	Assert(uh[0].size() == (dim+1), ExcInternalError() );
 	if(printing_carrier)
@@ -99,10 +95,10 @@ compute_derived_quantities_vector(
 		{
 			// copy over current with scaling.
 			for(unsigned int d=0; d<dim; d++)
-				computed_quantities[q](d) = (scale_current * uh[q](d));
+				computed_quantities[q](d) = (scale_current * inputs.solution_values[q](d));
 	
 			// copy over densities without scaling
-			computed_quantities[q](dim) = uh[q](dim);
+			computed_quantities[q](dim) = inputs.solution_values[q](dim);
 		} // for q
 	}
 	else
@@ -112,10 +108,10 @@ compute_derived_quantities_vector(
 			// copy over electric field..
 			// TODO: rescale with permitivities?
 			for(unsigned int d=0; d<dim; d++)
-				computed_quantities[q](d) = (scale_elec_field * uh[q](d));
+				computed_quantities[q](d) = (scale_elec_field * inputs.solution_values[q](d));
 	
 			// copy over potential
-			const double potential = scale_potential * uh[q](dim);
+			const double potential = scale_potential * inputs.solution_values[q](dim);
 			computed_quantities[q](dim) = potential;
 		} // for q
 	} // else
