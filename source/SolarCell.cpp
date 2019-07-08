@@ -33,8 +33,8 @@ namespace SOLARCELL
 	Mixed_Assembler(),
 	n_type_electrons_eq(),
 	n_type_holes_eq(),
-	reductants_e(),
-	oxidants_e(),
+	p_type_electrons_eq(),
+	p_type_holes_eq(),
 	built_in_bias(),
 	applied_bias(),
 	bulk_bias(),
@@ -1589,12 +1589,12 @@ namespace SOLARCELL
 				if(face->boundary_id() == Dirichlet)
 				{
 					// Get the doping profile values for the boundary conditions
-					reductants_e.value_list(
+					p_type_electrons_eq.value_list(
 						scratch.carrier_fe_face_values.get_quadrature_points(),
 						scratch.carrier_1_bc_values,
 						dim); // calls the density values of the donor profile
 										  // not the current ones
-					oxidants_e.value_list(
+					p_type_holes_eq.value_list(
 						scratch.carrier_fe_face_values.get_quadrature_points(),
 						scratch.carrier_2_bc_values,
 						dim); // calls the density values of the donor profile
@@ -2027,13 +2027,13 @@ namespace SOLARCELL
 			VectorTools::project(electrolyte_dof_handler,
 					 redox_pair.constraints,
 					 QGauss<dim>(degree+1),
-					 reductants_e,
+					 p_type_electrons_eq,
 					 redox_pair.carrier_1.solution);
 
 			VectorTools::project(electrolyte_dof_handler,
 					redox_pair.constraints,
 					QGauss<dim>(degree+1),
-					oxidants_e,
+					p_type_holes_eq,
 					redox_pair.carrier_2.solution);
 
 			// make the time stamps

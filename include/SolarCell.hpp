@@ -416,9 +416,9 @@ namespace SOLARCELL
 			/// \f$ \rho_{p}^{e} (\textbf{x}) \f$
 			Holes_Equilibrium<dim>				n_type_holes_eq;
 			/// \f$ \rho_{r}^{\infty}(\textbf{x})  \f$
-			const Reductants_Equilibrium<dim>			reductants_e;
+			Electrons_Equilibrium<dim>			p_type_electrons_eq;
 			/// \f$ \rho_{o}^{\infty} (\textbf{x}) \f$
-			const Oxidants_Equilibrium<dim>				oxidants_e;
+			Holes_Equilibrium<dim>				p_type_holes_eq;
 
 			/*-------------------------------------------------------------*/
 			/* The potential functions					*/
