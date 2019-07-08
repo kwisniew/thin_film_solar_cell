@@ -31,8 +31,8 @@ namespace SOLARCELL
 	carrier_fe(FESystem<dim>(FE_DGQ<dim>(degree), dim), 1,
 		   FE_DGQ<dim>(degree), 		   1),
 	Mixed_Assembler(),
-	electrons_e(),
-	holes_e(),
+	n_type_electrons_eq(),
+	n_type_holes_eq(),
 	reductants_e(),
 	oxidants_e(),
 	built_in_bias(),
@@ -51,7 +51,7 @@ namespace SOLARCELL
 		built_in_bias.set_value(sim_params.scaled_built_in_bias);
 		schottky_bias.set_value(sim_params.scaled_domain_height);
 		schottky_bias.set_value(sim_params.scaled_schottky_bias);
-		electrons_e.set_value(sim_params.scaled_n_type_doping);
+		n_type_electrons_eq.set_value(sim_params.scaled_n_type_doping);
 
 		// set the charges name, charge sign, and mobility
 		electron_hole_pair.carrier_1.set_name("Electrons");
@@ -547,7 +547,7 @@ namespace SOLARCELL
 	
 
 		// get doping profiles values on this cell
-		electrons_e.value_list(scratch.carrier_fe_values.get_quadrature_points(),
+		n_type_electrons_eq.value_list(scratch.carrier_fe_values.get_quadrature_points(),
 					scratch.donor_doping_values,
 					dim); // calls the density values of the donor profile
 
@@ -560,7 +560,7 @@ namespace SOLARCELL
 			print_doping = false;
 		}
 
-		holes_e.value_list(scratch.carrier_fe_values.get_quadrature_points(),
+		n_type_holes_eq.value_list(scratch.carrier_fe_values.get_quadrature_points(),
 				scratch.acceptor_doping_values,
 				dim); // calls the density values of the donor profile
 
@@ -1229,12 +1229,12 @@ namespace SOLARCELL
 				if(face->boundary_id() == Dirichlet)
 				{
 					// Get the doping profile values for the boundary conditions
-					electrons_e.value_list(
+					n_type_electrons_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_1_bc_values,
 								dim); // calls the density values of the donor profile
 								     // not the current ones
-					holes_e.value_list(
+					n_type_holes_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_2_bc_values,
 								dim); // calls the density values of the donor profile
@@ -1282,12 +1282,12 @@ namespace SOLARCELL
 				else if(face->boundary_id() == Interface)
 				{
 					// get the doping profile values for the boundary conditions
-					electrons_e.value_list(
+					n_type_electrons_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_1_bc_values,
 								dim); // calls the density values of the donor profile
 									  // not the current ones
-					holes_e.value_list(
+					n_type_holes_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_2_bc_values,
 								dim); // calls the density values of the donor profile
@@ -1365,12 +1365,12 @@ namespace SOLARCELL
 				else if(face->boundary_id() == Schottky)
 				{
 					// Get the doping profile values for the boundary conditions
-					electrons_e.value_list(
+					n_type_electrons_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_1_bc_values,
 								dim); // calls the density values of the donor profile
 									  // not the current ones
-					holes_e.value_list(
+					n_type_holes_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_2_bc_values,
 								dim); // calls the density values of the donor profile
@@ -1672,12 +1672,12 @@ namespace SOLARCELL
 									semi_interface_faces[interface_index]);
 
 					// Get the doping profile values for the interface conditions
-					electrons_e.value_list(
+					n_type_electrons_eq.value_list(
 						scratch.carrier_fe_neighbor_face_values.get_quadrature_points(),
 						scratch.carrier_1_bc_values,
 						dim); // calls the density values of the donor profile
 						 // not the current ones
-					holes_e.value_list(
+					n_type_holes_eq.value_list(
 						scratch.carrier_fe_neighbor_face_values.get_quadrature_points(),
 						scratch.carrier_2_bc_values,
 						dim); // calls the density values of the donor profile
@@ -2015,13 +2015,13 @@ namespace SOLARCELL
 			VectorTools::project(semiconductor_dof_handler,
 						electron_hole_pair.constraints,
 						QGauss<dim>(degree+1),
-						electrons_e,
+						n_type_electrons_eq,
 						electron_hole_pair.carrier_1.solution);
 
 			VectorTools::project(semiconductor_dof_handler,
 						electron_hole_pair.constraints,
 						QGauss<dim>(degree+1),
-						holes_e,
+						n_type_holes_eq,
 						electron_hole_pair.carrier_2.solution);
 
 			VectorTools::project(electrolyte_dof_handler,

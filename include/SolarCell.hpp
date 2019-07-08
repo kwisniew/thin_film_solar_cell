@@ -412,9 +412,9 @@ namespace SOLARCELL
 			/*	Initial Conditions										   */
  			/*-------------------------------------------------------------*/
 			/// \f$ \rho_{n}^{e}(\textbf{x}) \f$
-			Electrons_Equilibrium<dim>			electrons_e;
+			Electrons_Equilibrium<dim>			n_type_electrons_eq;
 			/// \f$ \rho_{p}^{e} (\textbf{x}) \f$
-			const Holes_Equilibrium<dim>				holes_e;
+			Holes_Equilibrium<dim>				n_type_holes_eq;
 			/// \f$ \rho_{r}^{\infty}(\textbf{x})  \f$
 			const Reductants_Equilibrium<dim>			reductants_e;
 			/// \f$ \rho_{o}^{\infty} (\textbf{x}) \f$
