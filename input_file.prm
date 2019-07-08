@@ -26,7 +26,7 @@ end
 
 subsection electrons
   # electron mobility [v/cm^{2}]
-  set mobility               = 1350.0
+  set mobility               = 0.02
 
   # Recombination rate/time of electrons [s]
   set recombination time     = 5e-5
@@ -41,7 +41,7 @@ end
 
 subsection holes
   # hole mobility [v/cm^{2}]
-  set mobility               = 480.0
+  set mobility               = 0.02
 
   # Recombination rate/time of holes [s]
   set recombination time     = 5e-5
@@ -69,6 +69,12 @@ subsection mesh
 
   # bottom radius of wire
   set radius two     = 0.3
+  
+  # n-type width
+  set n_type width   = 0.6
+  
+  # p_type width     
+  set p_type width   = 4.0 
 end
 
 
@@ -89,10 +95,16 @@ subsection physical
   set built in bias              = 1.00
 
   # the characteristic density scale [cm^{-3}]
-  set characteristic density     = 1.0e16
+  set characteristic density     = 1.0
+  
+  # scaled n type doping [cm^{-3}]
+  set n_type doping     = 1.0e18
+
+  # scaled p type doping [cm^{-3}]
+  set p_type doping     = 1.0e15
 
   # the characteristic length scale [cm]
-  set characteristic length      = 1.0e-4
+  set characteristic length      = 1.0e-6
 
   # the characteristic time scale [s]
   set characteristic time        = 1.0e-12
@@ -101,7 +113,7 @@ subsection physical
   set electrolyte permittivity   = 1000
 
   # true means that the cell is illuminated, false means its not.
-  set illumination status        = true
+  set illumination status        = false
 
   # whether device is insulated. See Grid::make_Neumann_boundaries
   set insulated                  = true
@@ -119,7 +131,7 @@ subsection physical
   set schottky status            = false
 
   # semiconductor permittivity const []
-  set semiconductor permittivity = 11.9
+  set semiconductor permittivity = 13
 end
 
 

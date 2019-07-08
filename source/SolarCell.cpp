@@ -545,6 +545,15 @@ namespace SOLARCELL
 					scratch.donor_doping_values,
 					dim); // calls the density values of the donor profile
 
+		/*
+		 * 	if(print_doping == true){
+			std::cout << "UWAGAAAA:" << std::endl;
+			for(unsigned int i;i<scratch.donor_doping_values.size();i++){
+				std::cout << "point:   " << i << "    doping:  " << scratch.donor_doping_values.at(i)<< std::endl;
+			}
+			print_doping = false;
+		}*/
+
 		holes_e.value_list(scratch.carrier_fe_values.get_quadrature_points(),
 				scratch.acceptor_doping_values,
 				dim); // calls the density values of the donor profile
@@ -1977,7 +1986,7 @@ namespace SOLARCELL
 
 
 		// if we are restarting the simulation, read in the dofs
-		// from the end of hte last sim as the initial conditions of this one
+		// from the end of the last sim as the initial conditions of this one
 		if(sim_params.restart_status)
 		{
 			electron_hole_pair.read_dofs();
@@ -2031,7 +2040,10 @@ namespace SOLARCELL
 		}
 
 		// get the intitial potential and electric field
+		print_doping=true;
 		assemble_Poisson_rhs();
+/*
+
 		solve_Poisson();
 	
 	
@@ -2091,6 +2103,7 @@ namespace SOLARCELL
 		// print the dofs of the end state
 		electron_hole_pair.print_dofs();
 		redox_pair.print_dofs();
+*/
 
 
 	} // run

@@ -10,8 +10,9 @@
 	class Electrons_Equilibrium : public Function<dim>
 	{
 		public:
+			double doping_profile;
 			/** \brief Default constructor. */
-			Electrons_Equilibrium() : Function<dim>(dim+1)
+			Electrons_Equilibrium(double doping_profile) : Function<dim>(dim+1),doping_profile(doping_profile)
 			{}
 
 			/** \brief Returns value of \f$\rho_{n}^{e}\f$ at point p.*/

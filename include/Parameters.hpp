@@ -69,7 +69,11 @@ namespace ParameterSpace
 			double scaled_domain_length;
 			double scaled_domain_height;
 			double scaled_radius_one;
-			double scaled_radius_two;	
+			double scaled_radius_two;
+			double scaled_n_type_width;
+			double scaled_p_type_width;
+			double scaled_n_type_doping;
+			double scaled_p_type_doping;
 
 			bool illum_or_dark;
 			bool insulated;
@@ -131,9 +135,11 @@ namespace ParameterSpace
 				prm.enter_subsection("mesh");
 				this->scaled_domain_height = prm.get_double("mesh height");
 				this->scaled_domain_length = prm.get_double("mesh length");
-				this->scaled_radius_one = prm.get_double("radius one");
-				this->scaled_radius_two = prm.get_double("radius two");
-				this->scaled_boundary_layer = prm.get_double("boundary layer");
+				this->scaled_radius_one    = prm.get_double("radius one");
+				this->scaled_radius_two    = prm.get_double("radius two");
+				this->scaled_boundary_layer= prm.get_double("boundary layer");
+				this->scaled_n_type_width  = prm.get_double("n_type width");
+				this->scaled_p_type_width  = prm.get_double("p_type width");
 				prm.leave_subsection();
 
 				prm.enter_subsection("physical");	
@@ -146,6 +152,8 @@ namespace ParameterSpace
 				this->characteristic_length = prm.get_double("characteristic length");
 				this->characteristic_denisty = prm.get_double("characteristic density");
 				this->characteristic_time = prm.get_double("characteristic time");
+				this->scaled_n_type_doping  = prm.get_double("n_type doping");
+				this->scaled_p_type_doping  = prm.get_double("p_type doping");
 				this->scaled_intrinsic_density = prm.get_double("intrinsic density");
 				this->scaled_photon_flux = prm.get_double("photon flux");
 				this->scaled_absorption_coeff = prm.get_double("absorption coefficient"); 
@@ -179,6 +187,12 @@ namespace ParameterSpace
 
 
 				// scale the parameters
+				this->characteristic_denisty =
+				// MAX(a, b) == ((a > b) ? a : b)
+				(this->scaled_p_type_doping > this->scaled_n_type_doping ? this->scaled_p_type_doping : this->scaled_n_type_doping);
+
+				this->scaled_n_type_doping /= this->characteristic_denisty;
+				this->scaled_p_type_doping /= this->characteristic_denisty;
 				this->scaled_intrinsic_density /= this->characteristic_denisty;
 				this->scaled_electron_recombo_t /= this->characteristic_time;
 				this->scaled_hole_recombo_t /= this->characteristic_time;

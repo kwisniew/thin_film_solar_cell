@@ -163,6 +163,8 @@ namespace Grid_Maker
 			double scaled_radius_one;
 			/// Set in constructor.			
 			double scaled_radius_two;
+			double scaled_n_type_width;
+			double scaled_p_type_width;
 			/// Set in constructor.			
 			double scaled_boundary_layer;
 			/// Set in constructor.			

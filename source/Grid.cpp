@@ -16,6 +16,8 @@ namespace Grid_Maker
 		scaled_domain_length	= sim_params.scaled_domain_length;
 		scaled_radius_one	= sim_params.scaled_radius_one;
 		scaled_radius_two	= sim_params.scaled_radius_two;
+		scaled_n_type_width = sim_params.scaled_n_type_width;
+		scaled_p_type_width = sim_params.scaled_p_type_width;
 		scaled_boundary_layer	= sim_params.scaled_boundary_layer;
 		n_global_refine		= sim_params.n_global_refine;	
 		n_local_refine		= sim_params.n_local_refine;
@@ -408,7 +410,7 @@ namespace Grid_Maker
 					if(cell->face(face_no)->center()[1] == 0.0)	
 					{
 						// electrolyte portion 
-						if(cell->face(face_no)->center()[0] > scaled_radius_one)
+						if(cell->face(face_no)->center()[0] > scaled_radius_two)
 						{ 
 							cell->face(face_no)->set_boundary_id(Neumann);
 						}

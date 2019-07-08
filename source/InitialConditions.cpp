@@ -17,7 +17,7 @@
 		else //(component == dim)
 		{
 //			if(p[0] < 0.2)
-				return 2; 
+				return doping_profile;
 //			else 
 //				return 0;
 		}

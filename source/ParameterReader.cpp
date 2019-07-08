@@ -95,6 +95,14 @@ namespace ParameterSpace
 				Patterns::Double(0),
 				"the characteristic density scale [cm^{-3}]");
 
+		prm.declare_entry("n_type doping", "1.0e18",
+				Patterns::Double(0),
+				"doping in n type region [cm^{-3}]");
+
+		prm.declare_entry("p_type doping", "1.0e15",
+				Patterns::Double(0),
+				"doping in p type region [cm^{-3}]");
+
 		prm.declare_entry("characteristic time", "1.0e-12",
 				Patterns::Double(0),
 				"the characteristic time scale [s]");
@@ -142,6 +150,13 @@ namespace ParameterSpace
 				Patterns::Double(0),
 				"width of boundary layer");
 
+		prm.declare_entry("n_type width", "0.6",
+						Patterns::Double(0),
+						"width of n type layer");
+
+		prm.declare_entry("p_type width", "4.0",
+						Patterns::Double(0),
+						"width of p type layer");
 
 		prm.leave_subsection();	
 
