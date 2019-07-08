@@ -24,6 +24,16 @@
 	}
 
 	template <int dim>
+	void
+	Electrons_Equilibrium<dim>::
+	set_value(const double & doping_value)
+	{
+		doping_profile = doping_value;
+	}
+
+
+
+	template <int dim>
 	double
 	Holes_Equilibrium<dim>::
 	value(const Point<dim> &p,

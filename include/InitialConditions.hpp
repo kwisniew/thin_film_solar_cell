@@ -3,22 +3,31 @@
 
 #include<deal.II/base/function.h>
 
-	using namespace dealii;
 
-	/** \brief Initial/Boundary conditions for electrons, \f$ \rho_{n}^{e} \f$.*/
-	template<int dim>
-	class Electrons_Equilibrium : public Function<dim>
-	{
-		public:
-			double doping_profile;
-			/** \brief Default constructor. */
-			Electrons_Equilibrium(double doping_profile) : Function<dim>(dim+1),doping_profile(doping_profile)
-			{}
+using namespace dealii;
 
-			/** \brief Returns value of \f$\rho_{n}^{e}\f$ at point p.*/
-			virtual double value(const Point<dim> & p,
-					     const unsigned int component=0) const;
-	};
+/** \brief Initial/Boundary conditions for electrons, \f$ \rho_{n}^{e} \f$.*/
+
+
+
+
+template<int dim>
+class Electrons_Equilibrium : public Function<dim>
+{
+	public:
+		/** \brief Default constructor. */
+		Electrons_Equilibrium() : Function<dim>(dim+1)
+		{}
+
+		void set_value(const double & doping_value);
+
+		/** \brief Returns value of \f$\rho_{n}^{e}\f$ at point p.*/
+		virtual double value(const Point<dim> &p,
+					 const unsigned int component = 0) const;
+
+	private:
+		double doping_profile;
+};
 
 	/** \brief Initial/Boundary conditions for holes, \f$ \rho_{p}^{e} \f$.*/
 	template<int dim>
