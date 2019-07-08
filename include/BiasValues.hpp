@@ -12,18 +12,18 @@ using namespace dealii;
 
 /** \brief The built in bias of the semiconductor \$f\Phi_{\text{bi}}\f$.*/
 template <int dim>
-class Built_In_Bias : public dealii::Function<dim>
+class Built_In_Bias : public Function<dim>
 {
 	public:
 		/** \brief Default constructor.*/
-		Built_In_Bias() : dealii::Function<dim>()
+		Built_In_Bias() : Function<dim>()
 		{}
 	
 		void set_value(const double & bias_value);
 
 		/** \brief Returns value of \$f\Phi_{\text{bi}}\f$ at point p.*/ 
-		virtual double value(const dealii::Point<dim> &p, 
-				     const unsigned int component = 0 ) const;
+		virtual double value(const Point<dim> &p,
+				     const unsigned int component = 0) const;
 
 	private:
 		double built_in_bias;

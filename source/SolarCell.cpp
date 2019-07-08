@@ -18,6 +18,7 @@ namespace SOLARCELL
 			 ParameterHandler & param)
 	:
 	degree(degree),
+	print_doping(true),
 	prm(param),
 	Poisson_dof_handler(Poisson_triangulation),
 	Poisson_fe(FE_RaviartThomas<dim>(degree-1),  1,
@@ -50,6 +51,7 @@ namespace SOLARCELL
 		built_in_bias.set_value(sim_params.scaled_built_in_bias);
 		schottky_bias.set_value(sim_params.scaled_domain_height);
 		schottky_bias.set_value(sim_params.scaled_schottky_bias);
+		electrons_e.set_value(sim_params.scaled_n_type_doping);
 
 		// set the charges name, charge sign, and mobility
 		electron_hole_pair.carrier_1.set_name("Electrons");
@@ -91,6 +93,10 @@ namespace SOLARCELL
 			generation.set_illuminated_params(sim_params);
 		else
 			generation.set_dark_params();
+
+		//set doping profile
+
+
 	}	//SolarCellProblem
 
 	// destructor
@@ -545,14 +551,14 @@ namespace SOLARCELL
 					scratch.donor_doping_values,
 					dim); // calls the density values of the donor profile
 
-		/*
-		 * 	if(print_doping == true){
-			std::cout << "UWAGAAAA:" << std::endl;
+
+		if(print_doping == true){
+			//std::cout << "UWAGAAAA:" << std::endl;
 			for(unsigned int i;i<scratch.donor_doping_values.size();i++){
 				std::cout << "point:   " << i << "    doping:  " << scratch.donor_doping_values.at(i)<< std::endl;
 			}
 			print_doping = false;
-		}*/
+		}
 
 		holes_e.value_list(scratch.carrier_fe_values.get_quadrature_points(),
 				scratch.acceptor_doping_values,
