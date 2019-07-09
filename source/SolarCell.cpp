@@ -52,6 +52,9 @@ namespace SOLARCELL
 		schottky_bias.set_value(sim_params.scaled_domain_height);
 		schottky_bias.set_value(sim_params.scaled_schottky_bias);
 		n_type_electrons_eq.set_value(sim_params.scaled_n_type_doping);
+		n_type_holes_eq.set_value(0);
+		p_type_holes_eq.set_value(sim_params.scaled_p_type_doping);
+		p_type_electrons_eq.set_value(0);
 
 		// set the charges name, charge sign, and mobility
 		electron_hole_pair.carrier_1.set_name("Electrons");
