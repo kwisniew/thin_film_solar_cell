@@ -35,6 +35,8 @@ namespace SOLARCELL
 	n_type_holes_eq(),
 	p_type_electrons_eq(),
 	p_type_holes_eq(),
+	schottky_p_type_electrons_eq(),
+	schottky_p_type_holes_eq(),
 	built_in_bias(),
 	applied_bias(),
 	bulk_bias(),
@@ -49,13 +51,14 @@ namespace SOLARCELL
 		// set the voltage bias functions
 		applied_bias.set_value(sim_params.scaled_applied_bias);
 		built_in_bias.set_value(sim_params.scaled_built_in_bias);
-		schottky_bias.set_value(sim_params.scaled_domain_height);
+		schottky_bias.set_location(0);
 		schottky_bias.set_value(sim_params.scaled_schottky_bias);
 		n_type_electrons_eq.set_value(sim_params.scaled_n_type_doping);
 		n_type_holes_eq.set_value(0);
 		p_type_holes_eq.set_value(sim_params.scaled_p_type_doping);
 		p_type_electrons_eq.set_value(0);
-
+		schottky_p_type_electrons_eq.set_value(sim_params.scaled_schottky_electron_density);
+		schottky_p_type_holes_eq.set_value(sim_params.scaled_schottky_hole_density);
 		// set the charges name, charge sign, and mobility
 		electron_hole_pair.carrier_1.set_name("Electrons");
 		electron_hole_pair.carrier_1.charge_number = -1.0;
@@ -554,18 +557,18 @@ namespace SOLARCELL
 					scratch.donor_doping_values,
 					dim); // calls the density values of the donor profile
 
-
-		if(print_doping == true){
-			//std::cout << "UWAGAAAA:" << std::endl;
-			for(unsigned int i;i<scratch.donor_doping_values.size();i++){
-				std::cout << "point:   " << i << "    doping:  " << scratch.donor_doping_values.at(i)<< std::endl;
-			}
-			print_doping = false;
-		}
-
 		n_type_holes_eq.value_list(scratch.carrier_fe_values.get_quadrature_points(),
 				scratch.acceptor_doping_values,
 				dim); // calls the density values of the donor profile
+
+
+/*		if(print_doping == true){
+			//std::cout << "UWAGAAAA:" << std::endl;
+			for(unsigned int i;i<scratch.acceptor_doping_values.size();i++){
+				std::cout << "point:   " << i << "    doping:  " << scratch.acceptor_doping_values.at(i)<< std::endl;
+			}
+			print_doping = false;
+		}*/
 
 		// Loop over all the quadrature points in this cell
 		for(unsigned int q=0; q<n_q_points; q++)
@@ -667,6 +670,10 @@ namespace SOLARCELL
 								scratch.Poisson_fe_face_values.get_quadrature_points(),
 								scratch.Poisson_bi_values);
 					
+					applied_bias.value_list(
+								scratch.Poisson_fe_face_values.get_quadrature_points(),
+								scratch.Poisson_app_values);
+
 					schottky_bias.value_list(
 								scratch.Poisson_fe_face_values.get_quadrature_points(),
 								scratch.Poisson_bc_values);
@@ -694,7 +701,9 @@ namespace SOLARCELL
 								 scratch.normals[q] *
 								(scratch.Poisson_bi_values[q] 
 								 -
-								scratch.Poisson_bc_values[q]) *
+								scratch.Poisson_bc_values[q]
+								-
+								scratch.Poisson_app_values[q]) *
 								scratch.Poisson_fe_face_values.JxW(q));
 						} // for i
 					} // for q
@@ -1306,7 +1315,7 @@ namespace SOLARCELL
 										electron_hole_pair.carrier_2.solution,
 										scratch.hole_interface_values);
 
-					// get neighboring selectrolyte cell
+					// get neighboring electrolyte cell
 					unsigned interface_index = semi_interface_map[
 							std::pair<unsigned int, unsigned>(cell->level(),
 											      cell->index())];
@@ -1432,7 +1441,6 @@ namespace SOLARCELL
 		} // end for face_no
 	
 	} // end assemble_local_semiconductor_rhs
-
 
 	template<int dim>
 	void
