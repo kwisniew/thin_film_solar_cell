@@ -50,8 +50,17 @@
 //			if(p[0] > 0.2)'
 //				return 2; 
 //			else
-				return 0;
+				return doping_profile;
 		}
+	}
+
+
+	template <int dim>
+	void
+	Holes_Equilibrium<dim>::
+	set_value(const double & doping_value)
+	{
+		doping_profile = doping_value;
 	}
 
 	template <int dim>
