@@ -54,7 +54,7 @@ value(const dealii::Point<dim> &p,
 {
 	// potential applied at y = 0, a positive potential is a foward bias,
 	// a negative potential is a reverse bias
-	if(p[1] == Schottky_location)
+	if(p[0] == Schottky_location)
 	{
 //		std::cout << "on schottky" << std::endl;
 		return Schottky_bias; // volts
