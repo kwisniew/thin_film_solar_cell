@@ -419,6 +419,10 @@ namespace SOLARCELL
 			Electrons_Equilibrium<dim>			p_type_electrons_eq;
 			/// \f$ \rho_{o}^{\infty} (\textbf{x}) \f$
 			Holes_Equilibrium<dim>				p_type_holes_eq;
+			/// \f$ \rho_{n}^{e}(\textbf{x}) \f$
+			Electrons_Equilibrium<dim>			schottky_p_type_electrons_eq;
+			/// \f$ \rho_{p}^{e} (\textbf{x}) \f$
+			Holes_Equilibrium<dim>				schottky_p_type_holes_eq;
 
 			/*-------------------------------------------------------------*/
 			/* The potential functions					*/
