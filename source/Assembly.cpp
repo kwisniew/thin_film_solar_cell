@@ -46,6 +46,7 @@ namespace Assembly
 	Poisson_rhs_values(quadrature.size()),
 	Poisson_bc_values(face_quadrature.size()),
 	Poisson_bi_values(face_quadrature.size()),
+	Poisson_app_values(face_quadrature.size()),
 	electric_field_values(quadrature.size()),
 	old_carrier_1_density_values(quadrature.size()),
 	old_carrier_2_density_values(quadrature.size()),
