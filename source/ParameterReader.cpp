@@ -103,6 +103,10 @@ namespace ParameterSpace
 				Patterns::Double(0),
 				"doping in p type region [cm^{-3}]");
 
+		prm.declare_entry("effective density", "2.54e19",
+				Patterns::Double(0),
+				"effective hole density Nv mh/m0 = 1 [cm^{-3}]");
+
 		prm.declare_entry("characteristic time", "1.0e-12",
 				Patterns::Double(0),
 				"the characteristic time scale [s]");
