@@ -38,9 +38,14 @@ class Electrons_Equilibrium : public Function<dim>
 			Holes_Equilibrium() : Function<dim>(dim+1)
 			{}
 
+			void set_value(const double & doping_value);
+
 			/** \brief Returns value of \f$\rho_{p}^{e}\f$ at point p.*/
 			virtual double value(const Point<dim> & p,
 					     const unsigned int component=0) const;
+
+		private:
+			double doping_profile;
 	};
 
 	/** \brief Initial/Boundary conditions for reductants, \f$ \rho_{r}^{\infty} \f$.*/
