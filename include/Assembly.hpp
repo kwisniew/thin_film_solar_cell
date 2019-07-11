@@ -92,6 +92,10 @@ namespace Assembly
 		/// values of Poissons equation at the quadrature points of the local cell
 		std::vector<double>			Poisson_bi_values;
 
+		/// Vector which holds built_in potential
+		/// values of Poissons equation at the quadrature points of the local cell
+		std::vector<double>			Poisson_app_values;
+
 		/// Vector which holds the electric field values
 		///	at the quadrature points of the local cell
 		std::vector<Tensor<1,dim>>  		electric_field_values;
