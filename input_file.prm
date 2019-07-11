@@ -32,7 +32,7 @@ subsection electrons
   set recombination time     = 5e-5
 
   # Recombination velocity of electrons [cm/s]
-  set recombination velocity = 3e5
+  set recombination velocity = 3e4
 
   # transfer rate of electrons [cm^{4} s^{-1}]
   set transfer rate          = 1e-19
@@ -47,7 +47,7 @@ subsection holes
   set recombination time     = 5e-5
 
   # Recombination velocity of holes [cm/s]
-  set recombination velocity = 2.9e5
+  set recombination velocity = 2.9e4
 
   # transfer rate of holes [cm^{4} s^{-1}]
   set transfer rate          = 1e-14
@@ -95,13 +95,16 @@ subsection physical
   set built in bias              = 1.00
 
   # the characteristic density scale [cm^{-3}]
-  set characteristic density     = 1.0
+  set characteristic density     = 1.0e16
   
   # scaled n type doping [cm^{-3}]
   set n_type doping     = 1.0e18
 
   # scaled p type doping [cm^{-3}]
   set p_type doping     = 1.0e15
+
+  # efective hole density Nv [cm^{-3}]
+  set effective density     = 2.54e19
 
   # the characteristic length scale [cm]
   set characteristic length      = 1.0e-6
@@ -125,10 +128,10 @@ subsection physical
   set photon flux                = 1.2e17
 
   # the Schottky barrier/applied  bias [V]
-  set schottky bias              = 0.0
+  set schottky bias              = 0.1
 
   # whether to have schottky contact. See Grid::make_Schottky_boundaries
-  set schottky status            = false
+  set schottky status            = true
 
   # semiconductor permittivity const []
   set semiconductor permittivity = 13
