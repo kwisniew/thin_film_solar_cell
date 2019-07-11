@@ -7,8 +7,9 @@
 namespace PhysicalConstants
 {
 	const double thermal_voltage  	 = 0.02585; // [V]
-	const double electron_charge  	 = 1.62e-19;  // [C]
-	const double vacuum_permittivity = 8.85e-14; // [A s V^{-1} cm^{-1} 
+	const double electron_charge  	 = 1.62e-19;// [C]
+	const double boltzman_constant   = 1.38e-23;// [J/K]=[kg*m^2/(s^2*K)]
+	const double vacuum_permittivity = 8.85e-14;// [A s V^{-1} cm^{-1}
 }
 
 namespace ParameterSpace
@@ -74,6 +75,9 @@ namespace ParameterSpace
 			double scaled_p_type_width;
 			double scaled_n_type_doping;
 			double scaled_p_type_doping;
+
+			double scaled_schottky_hole_density;
+			double scaled_schottky_electron_density;
 
 			bool illum_or_dark;
 			bool insulated;
@@ -154,6 +158,8 @@ namespace ParameterSpace
 				this->characteristic_time = prm.get_double("characteristic time");
 				this->scaled_n_type_doping  = prm.get_double("n_type doping");
 				this->scaled_p_type_doping  = prm.get_double("p_type doping");
+				this->scaled_schottky_electron_density=prm.get_double("effective density");
+				this->scaled_schottky_hole_density=prm.get_double("effective density");
 				this->scaled_intrinsic_density = prm.get_double("intrinsic density");
 				this->scaled_photon_flux = prm.get_double("photon flux");
 				this->scaled_absorption_coeff = prm.get_double("absorption coefficient"); 
@@ -186,14 +192,31 @@ namespace ParameterSpace
 				prm.leave_subsection();
 
 
+				//calculate carrier densities on schottky contact
+				this->scaled_schottky_electron_density *=
+						std::exp( -(this->scaled_built_in_bias - this->scaled_schottky_bias)
+								/
+								    PhysicalConstants::thermal_voltage
+								);
+
+				this->scaled_schottky_hole_density *=
+						std::exp( -(this->scaled_schottky_bias)
+								/
+								    PhysicalConstants::thermal_voltage
+								);
+
 				// scale the parameters
 				this->characteristic_denisty =
 				// MAX(a, b) == ((a > b) ? a : b)
 				(this->scaled_p_type_doping > this->scaled_n_type_doping ? this->scaled_p_type_doping : this->scaled_n_type_doping);
 
-				this->scaled_n_type_doping /= this->characteristic_denisty;
-				this->scaled_p_type_doping /= this->characteristic_denisty;
-				this->scaled_intrinsic_density /= this->characteristic_denisty;
+				this->scaled_n_type_doping             /= this->characteristic_denisty;
+				this->scaled_p_type_doping             /= this->characteristic_denisty;
+				this->scaled_intrinsic_density         /= this->characteristic_denisty;
+				this->scaled_schottky_electron_density /= this->characteristic_denisty;
+				this->scaled_schottky_hole_density     /= this->characteristic_denisty;
+
+
 				this->scaled_electron_recombo_t /= this->characteristic_time;
 				this->scaled_hole_recombo_t /= this->characteristic_time;
 
