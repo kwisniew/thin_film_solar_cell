@@ -40,10 +40,10 @@ namespace SOLARCELL
 	built_in_bias(),
 	applied_bias(),
 	bulk_bias(),
-	schottky_bias()/*,
+	schottky_bias(),
 	generation(),
 	delta_t(0.05),
-	full_system(0)*/
+	full_system(0)
 	{
 		// set the parameters
 		sim_params.parse_and_scale_parameters(prm);
@@ -1186,7 +1186,8 @@ namespace SOLARCELL
 			{
 				// contribution from RHS function + Drift
 				// int_{Omega} v * R dx
-				data.local_carrier_1_rhs(i) += ( 
+				data.local_carrier_1_rhs(i) +=
+						(
 						(scratch.psi_i_density[i] * scratch.generation_values[q])
 						+
 						(scratch.psi_i_density[i] *
@@ -1202,7 +1203,8 @@ namespace SOLARCELL
 						) *
 						scratch.carrier_fe_values.JxW(q);
 
-				data.local_carrier_2_rhs(i) += ( 
+				data.local_carrier_2_rhs(i) +=
+						(
 						(scratch.psi_i_density[i] * scratch.generation_values[q])
 						+
 						(scratch.psi_i_density[i] *
@@ -1274,12 +1276,12 @@ namespace SOLARCELL
 						{
 						// int_{\Gamma_{D}} ( -p^{-} n^{-} + penalty/h * v^{-}) * u_{D} ds
 							data.local_carrier_1_rhs(i) += 
-								    (-1.0 * scratch.psi_i_current[i] *
-								    scratch.normals[q]
-								    + 
-								    (penalty/h) * scratch.psi_i_density[i]) *
-								    scratch.carrier_1_bc_values[q] *
-								    scratch.carrier_fe_face_values.JxW(q);				
+								   (-1.0 * scratch.psi_i_current[i] *
+								   scratch.normals[q]
+								   +
+								   (penalty/h) * scratch.psi_i_density[i]) *
+								   scratch.carrier_1_bc_values[q] *
+								   scratch.carrier_fe_face_values.JxW(q);
 						
 							data.local_carrier_2_rhs(i) +=  
 								   (-1.0 * scratch.psi_i_current[i] *
@@ -1376,20 +1378,20 @@ namespace SOLARCELL
 				}
 				else if(face->boundary_id() == Schottky)
 				{
-					// Get the doping profile values for the boundary conditions
-					n_type_electrons_eq.value_list(
+					// Get the equilibrium electron and hole density on schottky contact profile values for the boundary conditions
+					schottky_p_type_electrons_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_1_bc_values,
 								dim); // calls the density values of the donor profile
 									  // not the current ones
-					n_type_holes_eq.value_list(
+					schottky_p_type_holes_eq.value_list(
 								scratch.carrier_fe_face_values.get_quadrature_points(),
 								scratch.carrier_2_bc_values,
 								dim); // calls the density values of the donor profile
 									  // not the current ones
 					
 	
-					// get the electrona and hole densities at the pevious time step
+					// get the electron and hole densities at the previous time step
 					scratch.carrier_fe_face_values[Density].get_function_values(
 									electron_hole_pair.carrier_1.solution,
 									scratch.electron_interface_values);
@@ -1927,7 +1929,7 @@ namespace SOLARCELL
 	SolarCellProblem<dim>::
 	run_full_system()
 	{
-		full_system = true;
+		full_system = false;
 
 		TimerOutput	timer(std::cout,
 					TimerOutput::summary,
@@ -2059,8 +2061,6 @@ namespace SOLARCELL
 		// get the intitial potential and electric field
 		print_doping=true;
 		assemble_Poisson_rhs();
-/*
-
 		solve_Poisson();
 	
 	
@@ -2120,7 +2120,6 @@ namespace SOLARCELL
 		// print the dofs of the end state
 		electron_hole_pair.print_dofs();
 		redox_pair.print_dofs();
-*/
 
 
 	} // run
