@@ -134,7 +134,7 @@ subsection physical
   set schottky status            = true
 
   # semiconductor permittivity const []
-  set semiconductor permittivity = 13
+  set semiconductor permittivity = 13.0
 end
 
 
