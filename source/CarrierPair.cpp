@@ -31,6 +31,7 @@ namespace ChargeCarrierSpace
 		
 		// Renumber dofs for [ Current, Density ]^{T} set up
 		DoFRenumbering::component_wise(dof_handler);
+
 		unsigned int n_dofs = dof_handler.n_dofs();
 
 		DynamicSparsityPattern carrier_system_dsp(n_dofs,n_dofs);
@@ -44,6 +45,7 @@ namespace ChargeCarrierSpace
   		DoFTools::make_flux_sparsity_pattern (dof_handler, carrier_system_dsp);
   		system_sparsity_pattern.copy_from(carrier_system_dsp);
  	
+
 		carrier_1.system_matrix.reinit(system_sparsity_pattern);
 		carrier_2.system_matrix.reinit(system_sparsity_pattern);
 
@@ -58,7 +60,7 @@ namespace ChargeCarrierSpace
 		// memeory for RHS
  	 	carrier_1.system_rhs.reinit (n_dofs); // [vector field, density]
  	 	carrier_2.system_rhs.reinit (n_dofs); // [vector field, density]
-	
+
 		constraints.clear();
 		constraints.close();
 	}
