@@ -42,9 +42,9 @@ namespace LDG_System
 	LDG<dim>::
 	assemble_local_LDG_mass_matrix(
 				const typename DoFHandler<dim>::active_cell_iterator & cell,
-				Assembly::AssemblyScratch<dim>			& scratch,
-				Assembly::DriftDiffusion::CopyData<dim>		& data,
-				const double	 				& delta_t)
+				Assembly::AssemblyScratch<dim>			   & scratch,
+				Assembly::DriftDiffusion::CopyData<dim>	   & data,
+				const double	 				           & delta_t)
 	{
 		const unsigned int dofs_per_cell 	= scratch.carrier_fe_values.dofs_per_cell;
 		const unsigned int n_q_points		= scratch.carrier_fe_values.n_quadrature_points;

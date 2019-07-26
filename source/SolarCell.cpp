@@ -18,6 +18,8 @@ namespace SOLARCELL
 			 ParameterHandler & param)
 	:
 	degree(degree),
+	delta_t(0.05),
+	full_system(false),
 	print_doping(true),
 	prm(param),
 	Poisson_dof_handler(Poisson_triangulation),
@@ -41,9 +43,7 @@ namespace SOLARCELL
 	applied_bias(),
 	bulk_bias(),
 	schottky_bias(),
-	generation(),
-	delta_t(0.05),
-	full_system(0)
+	generation()
 	{
 		// set the parameters
 		sim_params.parse_and_scale_parameters(prm);
@@ -124,6 +124,7 @@ namespace SOLARCELL
 		Poisson_object.setup_dofs(Poisson_fe,
 					  Poisson_dof_handler);
 
+
 		electron_hole_pair.setup_dofs(carrier_fe,
 					  semiconductor_dof_handler);
 
@@ -132,6 +133,7 @@ namespace SOLARCELL
 			redox_pair.setup_dofs(carrier_fe,
 					  electrolyte_dof_handler);
 		}
+
 	}	// setup+dos
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -151,9 +153,9 @@ namespace SOLARCELL
 				<< std::endl
 				<< "Total number of cells: " 
 				<< Poisson_triangulation.n_cells() << std::endl
-				<< "h_min: "
+				<< "h_min (minimum cell diameter): "
 				<< GridTools::minimal_cell_diameter(Poisson_triangulation) << std::endl
-				<< "h_max: "
+				<< "h_max (maximum cell diameter): "
 				<< GridTools::maximal_cell_diameter(Poisson_triangulation) << std::endl
 				<< std::endl;
 	
@@ -1765,8 +1767,11 @@ namespace SOLARCELL
 	SolarCellProblem<dim>::
 	set_solvers()
 	{
+		std::cout<< "Fokktoryzuję  Poissona!!!" << std::endl;
 		Poisson_object.set_solver();
+		std::cout<< "Fokktoryzuję  elektorny!!!" << std::endl;
 		electron_hole_pair.carrier_1.set_solver();
+		std::cout<< "Fokktoryzuję  dziury!!!" << std::endl;
 		electron_hole_pair.carrier_2.set_solver();
 		
 		if(full_system)
@@ -1918,8 +1923,6 @@ namespace SOLARCELL
 
 	/*--------------------------------------------------------------------*/
 
-
-
 	/*---------------------------------------------------------------------*/
 	/*			RUN		  			       */
 	/*---------------------------------------------------------------------*/
@@ -1946,11 +1949,9 @@ namespace SOLARCELL
 					Poisson_triangulation,
 					full_system);
 
-//		grid_maker.print_grid(Poisson_triangulation,
-//					"Grid.eps");
+//		grid_maker.print_grid(Poisson_triangulation,"Grid.eps");
 
-//		grid_maker.print_grid(semiconductor_triangulation,
-//													"Semi.eps");
+		grid_maker.print_grid(semiconductor_triangulation,"Semi.eps");
 
 //		grid_maker.print_grid(electrolyte_triangulation,
 //													"Elec.eps");
@@ -1962,7 +1963,6 @@ namespace SOLARCELL
 		setup_dofs();
 		timer.leave_subsection("Allocate Memory");
 
-		
 		timer.enter_subsection("Build Mappings");
 		setup_mappings();
 		timer.leave_subsection("Build Mappings");
@@ -1972,7 +1972,7 @@ namespace SOLARCELL
 		// dont remove
 		electron_hole_pair.penalty = 1.0; 
 		redox_pair.penalty = 1.0;
-	
+
 		
 		// assemble the global matrices
 		timer.enter_subsection("Assemble Poisson Matrix");
@@ -1990,7 +1990,9 @@ namespace SOLARCELL
 
 		// factor the matrices
 		timer.enter_subsection("Factor Matrices");
+		std::cout<< "Zaczynam faktoryzować!!!" << std::endl;
 		set_solvers();
+		std::cout<< "Kończe faktoryzować!!!" << std::endl;
 		timer.leave_subsection("Factor Matrices");
 	
 
@@ -2059,9 +2061,12 @@ namespace SOLARCELL
 		}
 
 		// get the intitial potential and electric field
-		print_doping=true;
+		//print_doping=true;
+		std::cout<< "Assembluję Poissona RHS!!!" << std::endl;
 		assemble_Poisson_rhs();
+		std::cout<< "Zaczynam rozwiązywać Poissona!!!" << std::endl;
 		solve_Poisson();
+		std::cout<< "Kończe rozwiązywać Poissona!!!!" << std::endl;
 	
 	
 		// print the initial values
