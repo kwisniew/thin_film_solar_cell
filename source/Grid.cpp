@@ -208,7 +208,7 @@ namespace Grid_Maker
 	{
 //		const unsigned int dim = 2;
 
-		// p-type layer vetrices
+		// p-type layer vertices
 		static const Point<2> vertices_1[]
 			= {
 			Point<2>(0                  , 0),
@@ -444,13 +444,14 @@ namespace Grid_Maker
 
 					//sets the n_type contact to be dirichlet
 					if(
-						  (cell->face(face_no)->center()[0] == scaled_p_type_width+scaled_n_type_width) /*||
-						  (cell->face(face_no)->center()[0] == scaled_domain_length) ||
-						  (cell->face(face_no)->center()[1] == 0.0) ||
-						  (cell->face(face_no)->center()[1] == scaled_domain_height) */
+						  (cell->face(face_no)->center()[0] == scaled_p_type_width+scaled_n_type_width) ||
+						  (cell->face(face_no)->center()[0] == 0.0) ||
+						  (cell->face(face_no)->center()[1] == scaled_domain_height) ||
+						  (cell->face(face_no)->center()[1] == 0.0)
 					  )
 					{
 						cell->face(face_no)->set_boundary_id(Dirichlet);
+						//std::cout << "jestem na Dirichlecie" << std::endl;
 					}
 				} // end if on boundary
 			} // for face_no
@@ -575,7 +576,7 @@ namespace Grid_Maker
 					face_no < GeometryInfo<dim>::faces_per_cell;
 					face_no++)
 			{
-				for (unsigned int v = 0; v < GeometryInfo<2>::vertices_per_face; ++v)
+				for (unsigned int v = 0; v < GeometryInfo<dim>::vertices_per_face; ++v)
 				 {
 					if(std::fabs( cell->face(face_no)->vertex(v)[0] - scaled_p_type_width) < 1e-10 )
 					{
@@ -584,7 +585,7 @@ namespace Grid_Maker
 					} // end if on boundary
 
 				} // for face_no
-				if(number_of_vertices_on_interface == GeometryInfo<2>::vertices_per_face)
+				if(number_of_vertices_on_interface == GeometryInfo<dim>::vertices_per_face)
 				{
 					cell->face(face_no)->set_manifold_id(PN_Interface);
 					//std::cout << "jestem na interfejsie" << std::endl;
