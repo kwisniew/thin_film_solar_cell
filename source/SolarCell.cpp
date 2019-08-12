@@ -563,15 +563,6 @@ namespace SOLARCELL
 				scratch.acceptor_doping_values,
 				dim); // calls the density values of the donor profile
 
-
-/*		if(print_doping == true){
-			//std::cout << "UWAGAAAA:" << std::endl;
-			for(unsigned int i;i<scratch.acceptor_doping_values.size();i++){
-				std::cout << "point:   " << i << "    doping:  " << scratch.acceptor_doping_values.at(i)<< std::endl;
-			}
-			print_doping = false;
-		}*/
-
 		// Loop over all the quadrature points in this cell
 		for(unsigned int q=0; q<n_q_points; q++)
 		{
@@ -1295,7 +1286,7 @@ namespace SOLARCELL
 						} // for i
 					}	// for q
 				} // end Dirichlet
-				else if(face->boundary_id() == Interface)
+/*				else if(face->boundary_id() == Interface)
 				{
 					// get the doping profile values for the boundary conditions
 					n_type_electrons_eq.value_list(
@@ -1377,7 +1368,7 @@ namespace SOLARCELL
 						} // for i
 					} // for j
 
-				}
+				}*/
 				else if(face->boundary_id() == Schottky)
 				{
 					// Get the equilibrium electron and hole density on schottky contact profile values for the boundary conditions
@@ -1995,7 +1986,8 @@ namespace SOLARCELL
 		std::cout<< "Kończe faktoryzować!!!" << std::endl;
 		timer.leave_subsection("Factor Matrices");
 	
-
+		std::cout << sim_params.scaled_schottky_hole_density << std::endl;
+		std::cout << sim_params.scaled_schottky_electron_density<< std::endl;
 
 		// make time stepping stuff... 
 		unsigned int counter 	= 0;
