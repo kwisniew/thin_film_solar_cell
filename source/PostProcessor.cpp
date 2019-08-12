@@ -19,9 +19,9 @@ PostProcessor(const ParameterSpace::Parameters 		& sim_params,
 	if(print_carrier)
 	{
 		density_name  = name.c_str();
-		density_name += " Density";
+		density_name += "Density";
 		current_name  = name.c_str();
-		current_name += " Current";
+		current_name += "Current";
 	}
 }
 
