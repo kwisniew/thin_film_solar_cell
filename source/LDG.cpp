@@ -42,9 +42,9 @@ namespace LDG_System
 	LDG<dim>::
 	assemble_local_LDG_mass_matrix(
 				const typename DoFHandler<dim>::active_cell_iterator & cell,
-				Assembly::AssemblyScratch<dim>			   & scratch,
-				Assembly::DriftDiffusion::CopyData<dim>	   & data,
-				const double	 				           & delta_t)
+				Assembly::AssemblyScratch<dim>			& scratch,
+				Assembly::DriftDiffusion::CopyData<dim>	& data,
+				const double	 						& delta_t)
 	{
 		const unsigned int dofs_per_cell 	= scratch.carrier_fe_values.dofs_per_cell;
 		const unsigned int n_q_points		= scratch.carrier_fe_values.n_quadrature_points;
@@ -352,7 +352,7 @@ namespace LDG_System
 							typename DoFHandler<dim>::cell_iterator	neighbor_child =
 									cell->neighbor_child_on_subface(face_no, subface_no);
 
-							// parent cant be more than one refinement level above 
+							// parent can't be more than one refinement level above
 							// the child
 							Assert(!neighbor_child->has_children(), ExcInternalError());
 
@@ -371,7 +371,8 @@ namespace LDG_System
 
 							assemble_local_flux_terms(scratch,
 											data,
-											(carrier_pair.penalty/h) );
+											(carrier_pair.penalty/h),
+											face->has_children());
 					
 							// now add the local ldg flux matrices to the global one
 							// for the carrier_1s and carrier_2s. 
@@ -452,6 +453,9 @@ namespace LDG_System
 		data.ve_ui_matrix = 0;
 		data.ve_ue_matrix = 0;
 
+		bool wychwyc_blad=true;
+		bool wychwyc_blad2=true;
+
 		Point<dim>	beta;
 		for(unsigned int d=0; d<dim; d++)
 			beta(d) = 1.0;
@@ -460,7 +464,7 @@ namespace LDG_System
 			// loop over all the quadrature points on this face	
 		for(unsigned int q=0; q<n_face_points; q++)
 		{
-			// loop over all the test functiion dofs of this face
+			// loop over all the test function dofs of this face
 			// and get the test function values at this quadrature point
 			for(unsigned int i=0; i<dofs_this_cell; i++)
 			{	
@@ -472,7 +476,7 @@ namespace LDG_System
 				// loop over all the trial function dofs of this face
 				for(unsigned int j=0; j<dofs_this_cell; j++)
 				{
-					// loop over all the trial functiion dofs of this face
+					// loop over all the trial function dofs of this face
 					// and get the trial function values at this quadrature point
 
 					const Tensor<1,dim>	psi_j_field_minus		= 
@@ -504,7 +508,20 @@ namespace LDG_System
 									psi_i_density_minus *
 									psi_j_density_minus
 									) * 
-									scratch.carrier_fe_face_values.JxW(q);				
+									scratch.carrier_fe_face_values.JxW(q);
+
+					if(isnan(data.vi_ui_matrix(i,j)) && wychwyc_blad)
+					{
+						std::cout<<"Kierwa1!:   "<< data.vi_ui_matrix(i,j) << std::endl;
+						std::cout<<"psi_j_density_minus:   "<< psi_j_density_minus << std::endl;
+						std::cout<<"psi_i_density_minus:   "<< psi_i_density_minus << std::endl;
+						std::cout<<"psi_i_field_minus   "<< psi_i_field_minus << std::endl;
+						std::cout<<"psi_j_field_minus   "<< psi_j_field_minus << std::endl;
+						std::cout<<"normal vector   "<< scratch.carrier_fe_face_values.normal_vector(q) << std::endl;
+						std::cout<<"scratch.carrier_fe_face_values.JxW(q):   "<< scratch.carrier_fe_face_values.JxW(q) << std::endl;
+						wychwyc_blad = false;
+					}
+
 				} // for j
 			
 				for(unsigned int j=0; j<dofs_neighbor_cell; j++)
@@ -538,7 +555,18 @@ namespace LDG_System
 									psi_i_density_minus *
 									psi_j_density_plus
 									) *
-								 	scratch.carrier_fe_face_values.JxW(q);				
+								 	scratch.carrier_fe_face_values.JxW(q);
+
+					if(isnan(data.vi_ue_matrix(i,j)) && wychwyc_blad2)
+					{
+						std::cout << std::endl;
+						std::cout<<"Sprawdzam, czy neighbor jest ok!   " << std::endl;
+						std::cout<<"psi_j_density_plus:   "<< psi_j_density_plus << std::endl;
+						std::cout<<"psi_j_field_plus   "<< psi_j_field_plus << std::endl;
+						std::cout << std::endl;
+						wychwyc_blad2 = false;
+					}
+
 				} // for j
 			} // for i
 
@@ -581,7 +609,10 @@ namespace LDG_System
 									psi_i_density_plus *
 									psi_j_density_minus
 									) *
-									scratch.carrier_fe_face_values.JxW(q);				
+									scratch.carrier_fe_face_values.JxW(q);
+
+
+					//if(isnan(data.ve_ui_matrix(i,j))) std::cout<<"Kierwa3!"<< data.ve_ui_matrix(i,j) << std::endl;
 				} // for j
 			
 				for(unsigned int j=0; j<dofs_neighbor_cell; j++)
@@ -615,11 +646,252 @@ namespace LDG_System
 									psi_i_density_plus *
 									psi_j_density_plus
 									) *
-									scratch.carrier_fe_face_values.JxW(q);				
+									scratch.carrier_fe_face_values.JxW(q);
+
+					//if(isnan(data.ve_ue_matrix(i,j))) std::cout<<"Kierwa4!"<< data.ve_ue_matrix(i,j) << std::endl;
+
 				} // for j
 			} // for i
 		} // for q
 	} // end assemble_flux_terms() 
+
+
+	template<int dim>
+	void
+	LDG<dim>::
+	assemble_local_flux_terms(
+				Assembly::AssemblyScratch<dim>		 	 & scratch,
+				Assembly::DriftDiffusion::CopyData<dim>	 & data,
+				const double 				 			 & penalty,
+				const bool 								& refinement_mismatch)
+	{
+		if(refinement_mismatch)
+		{
+			// this has been called from a cells face and constructs the local ldg flux
+			// matrices across that face
+			const unsigned int n_face_points  =
+						scratch.carrier_fe_subface_values.n_quadrature_points;
+		 	const unsigned int dofs_this_cell =
+						scratch.carrier_fe_subface_values.dofs_per_cell;
+			const unsigned int dofs_neighbor_cell =
+						scratch.carrier_fe_neighbor_face_values.dofs_per_cell;
+
+			const FEValuesExtractors::Vector Current(0);
+			const FEValuesExtractors::Scalar Density(dim);
+
+			// reset the local LDG flux matrices to zero
+			data.vi_ui_matrix = 0;
+			data.vi_ue_matrix = 0;
+			data.ve_ui_matrix = 0;
+			data.ve_ue_matrix = 0;
+
+			bool wychwyc_blad=true;
+			bool wychwyc_blad2=true;
+
+			Point<dim>	beta;
+			for(unsigned int d=0; d<dim; d++)
+				beta(d) = 1.0;
+			beta /= sqrt(beta.square());
+
+				// loop over all the quadrature points on this face
+			for(unsigned int q=0; q<n_face_points; q++)
+			{
+				// loop over all the test function dofs of this face
+				// and get the test function values at this quadrature point
+				for(unsigned int i=0; i<dofs_this_cell; i++)
+				{
+					const Tensor<1,dim>  psi_i_field_minus	 =
+									scratch.carrier_fe_subface_values[Current].value(i,q);
+					const double	    psi_i_density_minus =
+									scratch.carrier_fe_subface_values[Density].value(i,q);
+
+					// loop over all the trial function dofs of this face
+					for(unsigned int j=0; j<dofs_this_cell; j++)
+					{
+						// loop over all the trial function dofs of this face
+						// and get the trial function values at this quadrature point
+
+						const Tensor<1,dim>	psi_j_field_minus		=
+										scratch.carrier_fe_subface_values[Current].value(j,q);
+						const double 		psi_j_density_minus		=
+										scratch.carrier_fe_subface_values[Density].value(j,q);
+
+						// int_{face} n^{-} * ( p_{i}^{-} u_{j}^{-} + v^{-} q^{-} ) dx
+						// 					  + penalty v^{-}u^{-} dx
+						data.vi_ui_matrix(i,j)	+= (
+										 0.5 * (
+										psi_i_field_minus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_density_minus
+										+
+										psi_i_density_minus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_field_minus )
+										+
+										beta *
+										psi_i_field_minus *
+										psi_j_density_minus
+										-
+										beta *
+										psi_i_density_minus *
+									 	psi_j_field_minus
+										+
+										penalty *
+										psi_i_density_minus *
+										psi_j_density_minus
+										) *
+										scratch.carrier_fe_subface_values.JxW(q);
+
+						if(isnan(data.vi_ui_matrix(i,j)) && wychwyc_blad)
+						{
+							std::cout<<"Kierwa1!:   "<< data.vi_ui_matrix(i,j) << std::endl;
+							std::cout<<"psi_j_density_minus:   "<< psi_j_density_minus << std::endl;
+							std::cout<<"psi_i_density_minus:   "<< psi_i_density_minus << std::endl;
+							std::cout<<"psi_i_field_minus   "<< psi_i_field_minus << std::endl;
+							std::cout<<"psi_j_field_minus   "<< psi_j_field_minus << std::endl;
+							std::cout<<"normal vector   "<< scratch.carrier_fe_subface_values.normal_vector(q) << std::endl;
+							std::cout<<"scratch.carrier_fe_face_values.JxW(q):   "<< scratch.carrier_fe_subface_values.JxW(q) << std::endl;
+							wychwyc_blad = false;
+						}
+
+					} // for j
+
+					for(unsigned int j=0; j<dofs_neighbor_cell; j++)
+					{
+						const Tensor<1, dim>	psi_j_field_plus	=
+									scratch.carrier_fe_neighbor_face_values[Current].value(j,q);
+						const double 			psi_j_density_plus		=
+									scratch.carrier_fe_neighbor_face_values[Density].value(j,q);
+
+						// int_{face} n^{-} * ( p_{i}^{-} u_{j}^{+} + v^{-} q^{+} ) dx
+						// 					  - penalty v^{-}u^{+} dx
+						data.vi_ue_matrix(i,j) += (
+										0.5 * (
+										psi_i_field_minus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_density_plus
+										+
+										psi_i_density_minus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_field_plus )
+										-
+			 							beta *
+										psi_i_field_minus *
+										psi_j_density_plus
+										+
+										beta *
+										psi_i_density_minus *
+										psi_j_field_plus
+										-
+			 	 						penalty *
+										psi_i_density_minus *
+										psi_j_density_plus
+										) *
+									 	scratch.carrier_fe_subface_values.JxW(q);
+
+						if(isnan(data.vi_ue_matrix(i,j)) && wychwyc_blad2)
+						{
+							std::cout << std::endl;
+							std::cout<<"Sprawdzam, czy neighbor jest ok!   " << std::endl;
+							std::cout<<"psi_j_density_plus:   "<< psi_j_density_plus << std::endl;
+							std::cout<<"psi_j_field_plus   "<< psi_j_field_plus << std::endl;
+							std::cout << std::endl;
+							wychwyc_blad2 = false;
+						}
+
+					} // for j
+				} // for i
+
+				for(unsigned int i=0; i<dofs_neighbor_cell; i++)
+				{
+					const Tensor<1,dim>  psi_i_field_plus =
+								scratch.carrier_fe_neighbor_face_values[Current].value(i,q);
+					const double		 psi_i_density_plus =
+								scratch.carrier_fe_neighbor_face_values[Density].value(i,q);
+
+					for(unsigned int j=0; j<dofs_this_cell; j++)
+					{
+						const Tensor<1, dim>	psi_j_field_minus	=
+										scratch.carrier_fe_subface_values[Current].value(j,q);
+						const double 			psi_j_density_minus		=
+										scratch.carrier_fe_subface_values[Density].value(j,q);
+
+						// int_{face} -n^{-} * ( p_{i}^{+} u_{j}^{-} + v^{+} q^{-} )
+						// 					  - penalty v^{+}u^{-} dx
+
+						data.ve_ui_matrix(i,j) +=	(
+										-0.5 * (
+										psi_i_field_plus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_density_minus
+										+
+										psi_i_density_plus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_field_minus)
+										-
+										beta *
+										psi_i_field_plus *
+										psi_j_density_minus
+										+
+										beta *
+										psi_i_density_plus *
+										psi_j_field_minus
+										-
+										penalty *
+										psi_i_density_plus *
+										psi_j_density_minus
+										) *
+										scratch.carrier_fe_subface_values.JxW(q);
+
+
+						//if(isnan(data.ve_ui_matrix(i,j))) std::cout<<"Kierwa3!"<< data.ve_ui_matrix(i,j) << std::endl;
+					} // for j
+
+					for(unsigned int j=0; j<dofs_neighbor_cell; j++)
+					{
+						const Tensor<1, dim>	psi_j_field_plus	=
+									scratch.carrier_fe_neighbor_face_values[Current].value(j,q);
+						const double 			psi_j_density_plus		=
+									scratch.carrier_fe_neighbor_face_values[Density].value(j,q);
+
+						// int_{face} -n^{-} * ( p_{i}^{+} u_{j}^{+} + v^{+} q^{+} )
+						// 					  + penalty v^{+}u^{+} dx
+						data.ve_ue_matrix(i,j) +=	(
+										-0.5 * (
+										psi_i_field_plus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_density_plus
+										+
+										psi_i_density_plus *
+										scratch.carrier_fe_subface_values.normal_vector(q) *
+										psi_j_field_plus )
+										+
+										beta *
+										psi_i_field_plus *
+										psi_j_density_plus
+										-
+										beta *
+										psi_i_density_plus *
+										psi_j_field_plus
+										+
+										penalty *
+										psi_i_density_plus *
+										psi_j_density_plus
+										) *
+										scratch.carrier_fe_subface_values.JxW(q);
+
+						//if(isnan(data.ve_ue_matrix(i,j))) std::cout<<"Kierwa4!"<< data.ve_ue_matrix(i,j) << std::endl;
+
+					} // for j
+				} // for i
+			} // for q
+		}
+		else
+		{
+			std::cout << "Your are using wrong asemble_local_flux_terms() function!!!" << std::endl;
+		}
+	}
+
 
 	template<int dim>
 	void
