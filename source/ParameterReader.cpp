@@ -32,7 +32,7 @@ namespace ParameterSpace
 	{
 		prm.enter_subsection("computational");
 		prm.declare_entry("global refinements", "4",
-				 Patterns::Integer(1,10),
+				 Patterns::Integer(0,10),
 				 "number of global refinements");
 
 		prm.declare_entry("local refinements", "0",
